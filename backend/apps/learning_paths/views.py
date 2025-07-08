@@ -1,5 +1,6 @@
 from django.shortcuts import render
 import requests
+import json
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -19,21 +20,48 @@ class GenerateLearningPathView(APIView):
 
 def generate_learning_path(theme):
     prompt = f"""
-        I want you to act as a **learning path designer** for self-taught learners.
+            I want you to act as a learning path designer for self-taught learners.
 
-        Given any theme, your task is to generate a structured learning path divided into **three levels of mastery** (e.g., Beginner, Intermediate, Advanced). Each level should include **2 to 4 learning milestones**, presented in a logical and progressive order.
+            Given any theme, generate a structured learning path with three mastery levels (Beginner, Intermediate, Advanced). Each level should have 2 to 4 milestones.
 
-        Each milestone should contain:
-        - A **short, clear title**
-        - A **practical and encouraging description**, explaining what will be learned and **why it matters**
-        - A simple **challenge or recommended habit** to apply the knowledge in practice
+            Each milestone must have:
+            - "title": a short clear title
+            - "learn": what will be learned
+            - "why": why this matters
+            - "challenge": a small practical task
 
-        The tone should be **friendly, motivating, and accessible**, as if you're guiding someone learning on their own who needs clarity without feeling overwhelmed.
+            Your response must be a valid JSON object exactly in this format (without any extra text or code blocks):
 
-        Avoid overly technical language. Respond in a **structured format**, with each level labeled and milestones numbered within each level.
+            {{
+            "levels": [
+                {{
+                "name": "Beginner",
+                "milestones": [
+                    {{
+                    "title": "...",
+                    "learn": "...",
+                    "why": "...",
+                    "challenge": "..."
+                    }}
+                ]
+                }},
+                {{
+                "name": "Intermediate",
+                "milestones": [ ... ]
+                }},
+                {{
+                "name": "Advanced",
+                "milestones": [ ... ]
+                }}
+            ]
+            }}
 
-        Here is the theme: **"{theme}"**
-                """
+            IMPORTANT: Return **only** the JSON object — no explanations, no code blocks, no extra characters or quotes.
+            Return ONLY a valid JSON object, without any line breaks or extra formatting.
+
+
+            Theme: "{theme}"
+            """
     
     url = "https://openrouter.ai/api/v1/chat/completions"
     headers = {
@@ -53,5 +81,5 @@ def generate_learning_path(theme):
     response.raise_for_status()
     content = response.json()["choices"][0]["message"]["content"].strip()
     # Opcional: transformar a resposta em lista de etapas
-    etapas = [linha.strip() for linha in content.split('\n') if linha.strip()]
-    return etapas
+    roadmap = json.loads(content)
+    return roadmap
