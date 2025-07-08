@@ -19,20 +19,20 @@ class GenerateLearningPathView(APIView):
 
 def generate_learning_path(theme):
     prompt = f"""
-                Quero que você atue como um planejador de trilhas de aprendizado com foco em pessoas autodidatas.
+        I want you to act as a **learning path designer** for self-taught learners.
 
-                Dado um tema qualquer, sua tarefa é gerar uma trilha estruturada em **níveis de domínio** (por exemplo: Iniciante, Intermediário, Avançado). Cada nível deve conter de 2 a 4 marcos de aprendizado, ordenados de forma lógica e progressiva.
+        Given any theme, your task is to generate a structured learning path divided into **three levels of mastery** (e.g., Beginner, Intermediate, Advanced). Each level should include **2 to 4 learning milestones**, presented in a logical and progressive order.
 
-                Cada marco de aprendizado deve conter:
-                - Um **título curto e direto**
-                - Uma **descrição clara e motivadora**, explicando o que será aprendido e **por que isso importa**
-                - Um pequeno **desafio prático** ou hábito recomendado (curto e simples)
+        Each milestone should contain:
+        - A **short, clear title**
+        - A **practical and encouraging description**, explaining what will be learned and **why it matters**
+        - A simple **challenge or recommended habit** to apply the knowledge in practice
 
-                O estilo da resposta deve ser **acessível, encorajador e inspirador**, como se você estivesse guiando alguém que está tentando aprender por conta própria e precisa de direção sem se sentir sobrecarregado.
+        The tone should be **friendly, motivating, and accessible**, as if you're guiding someone learning on their own who needs clarity without feeling overwhelmed.
 
-                Evite jargões técnicos. Responda em **formato estruturado**, com o nome de cada nível em destaque e os marcos numerados dentro de cada um.
+        Avoid overly technical language. Respond in a **structured format**, with each level labeled and milestones numbered within each level.
 
-                Tema: **"{theme}"**
+        Here is the theme: **"{theme}"**
                 """
     
     url = "https://openrouter.ai/api/v1/chat/completions"
