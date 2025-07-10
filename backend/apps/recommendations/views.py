@@ -56,7 +56,15 @@ def generate_recommendations(theme):
     content = response.json()["choices"][0]["message"]["content"].strip()
     return json.loads(content)
 
+class UserHabitListCreateView(generics.ListCreateAPIView):
+    serializer_class = HabitSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        return Habit.objects.filter(user=self.request.user)
+
+    def perform_create(self,serializer):
+        serializer.save(user=self.request.user)
 
 class UserHabitUpdateView(generics.UpdateAPIView):
     serializer_class = HabitSerializer
