@@ -1,4 +1,7 @@
 from rest_framework.views import APIView
+from rest_framework import generics, permissions
+from .serializers import HabitSerializer
+from .models import Habit
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
@@ -52,3 +55,14 @@ def generate_recommendations(theme):
     response.raise_for_status()
     content = response.json()["choices"][0]["message"]["content"].strip()
     return json.loads(content)
+
+
+
+class UserHabitUpdateView(generics.UpdateAPIView):
+    serializer_class = HabitSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Habit.objects.all()
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+
