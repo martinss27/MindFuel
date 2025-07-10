@@ -73,4 +73,11 @@ class UserHabitUpdateView(generics.UpdateAPIView):
 
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
+    
+class UserHabitDeleteView(generics.DestroyAPIView):
+    serializer_class = HabitSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Habit.objects.filter(user=self.request.user)
 
