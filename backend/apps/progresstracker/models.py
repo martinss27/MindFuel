@@ -17,3 +17,8 @@ class Question(models.Model):
         ('true_false', 'true_false'),
         ('fill_in_the_blank', 'fill_in_the_blank')
     ])
+
+class Answer(models.Model):
+    question = models.ForeignKey(Question,related_name='answers', on_delete=models.CASCADE)
+    text = models.TextField()
+    is_correct = models.BooleanField(default=False)
