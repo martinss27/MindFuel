@@ -21,7 +21,7 @@ class LoginView(APIView):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             print(serializer.validated_data)
-            user = serializer.validated_data['user']
+            user = serializer.validated_data['user'] 
             refresh = RefreshToken.for_user(user)
             response = JsonResponse({
                 'user': {

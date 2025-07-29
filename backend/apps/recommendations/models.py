@@ -19,5 +19,6 @@ class Habit(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='in_progress')
 
 
-    def __str__(self): ##
+    def __str__(self): 
+        # type: ignore[attr-defined]
         return f"{self.name} ({self.get_level_display()}) - {self.user.username}"

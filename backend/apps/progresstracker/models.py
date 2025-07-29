@@ -11,3 +11,9 @@ class Quiz(models.Model):
 
 class Question(models.Model):
     quiz = models.ForeignKey(Quiz, related_name='questions', on_delete=models.CASCADE)
+    text = models.TextField()
+    question_type = models.CharField(max_length=50, choices=[
+        ('multiple_choice', 'multiple_choice'),
+        ('true_false', 'true_false'),
+        ('fill_in_the_blank', 'fill_in_the_blank')
+    ])
