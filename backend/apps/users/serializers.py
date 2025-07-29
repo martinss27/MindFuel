@@ -7,6 +7,7 @@ from django.contrib.auth.password_validation import validate_password
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, validators=[validate_password])
+    email = serializers.EmailField(required=True)
 
     class Meta:
         model = User
@@ -36,7 +37,7 @@ class LoginSerializer(serializers.Serializer):
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             raise serializers.ValidationError("User with this email does not exist.")
-        user = authenticate(username=user.username, password=password)
-        if user and user.is_active:
-            return {'user': user}
+        if user.check_password(password) and user.is_active:
+            data['user'] = user
+            return data
         raise serializers.ValidationError("Invalid credentials.")
