@@ -38,6 +38,5 @@ class LoginSerializer(serializers.Serializer):
         except User.DoesNotExist:
             raise serializers.ValidationError("User with this email does not exist.")
         if user.check_password(password) and user.is_active:
-            data['user'] = user
-            return data
+            return {'user': user}
         raise serializers.ValidationError("Invalid credentials.")

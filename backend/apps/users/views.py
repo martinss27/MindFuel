@@ -17,9 +17,10 @@ class RegisterView(generics.CreateAPIView):
 
 class LoginView(APIView):
 
-    def post(self,request):
+    def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
+            print(serializer.validated_data)
             user = serializer.validated_data['user']
             refresh = RefreshToken.for_user(user)
             response = JsonResponse({
