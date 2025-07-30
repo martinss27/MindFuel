@@ -5,8 +5,8 @@ from .models import Habit
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
-import requests
 import json
+from apps.progresstracker.ai_utils import call_ai_api
 
 class GenerateRecommendationsView(APIView):
     def post(self,request):
@@ -36,24 +36,8 @@ def generate_recommendations(theme):
         Tema: "{theme}"
         IMPORTANTE: Retorne apenas o JSON, sem explicações ou formatação extra.
     """
-
-    url = "https://openrouter.ai/api/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {settings.OPENROUTER_API_KEY}",
-        "Referer": "http://localhost:8000",
-        "X-Title": "Mindfuel Project"
-    }
-    data = {
-        "model": "openrouter/cypher-alpha:free",
-        "messages": [
-            {"role": "user", "content": prompt}
-        ],
-        "max_tokens": 800,
-        "temperature": 0.7
-    }
-    response = requests.post(url, headers=headers, json=data)
-    response.raise_for_status()
-    content = response.json()["choices"][0]["message"]["content"].strip()
+    system_content = "Você é um especialista em recomendações de hábitos e perfis para redes sociais."
+    content = call_ai_api(prompt, system_content=system_content)
     return json.loads(content)
 
 class UserHabitListCreateView(generics.ListCreateAPIView):

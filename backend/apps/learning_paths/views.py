@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
+from apps.progresstracker.ai_utils import call_ai_api
 
 
 class GenerateLearningPathView(APIView):
@@ -20,66 +21,49 @@ class GenerateLearningPathView(APIView):
 
 def generate_learning_path(theme):
     prompt = f"""
-            I want you to act as a learning path designer for self-taught learners.
+        I want you to act as a learning path designer for self-taught learners.
 
-            Given any theme, generate a structured learning path with three mastery levels (Beginner, Intermediate, Advanced). Each level should have 2 to 4 milestones.
+        Given any theme, generate a structured learning path with three mastery levels (Beginner, Intermediate, Advanced). Each level should have 2 to 4 milestones.
 
-            Each milestone must have:
-            - "title": a short clear title
-            - "learn": what will be learned
-            - "why": why this matters
-            - "challenge": a small practical task
+        Each milestone must have:
+        - "title": a short clear title
+        - "learn": what will be learned
+        - "why": why this matters
+        - "challenge": a small practical task
 
-            Your response must be a valid JSON object exactly in this format (without any extra text or code blocks):
+        Your response must be a valid JSON object exactly in this format (without any extra text or code blocks):
 
+        {{
+        "levels": [
             {{
-            "levels": [
+            "name": "Beginner",
+            "milestones": [
                 {{
-                "name": "Beginner",
-                "milestones": [
-                    {{
-                    "title": "...",
-                    "learn": "...",
-                    "why": "...",
-                    "challenge": "..."
-                    }}
-                ]
-                }},
-                {{
-                "name": "Intermediate",
-                "milestones": [ ... ]
-                }},
-                {{
-                "name": "Advanced",
-                "milestones": [ ... ]
+                "title": "...",
+                "learn": "...",
+                "why": "...",
+                "challenge": "..."
                 }}
             ]
+            }},
+            {{
+            "name": "Intermediate",
+            "milestones": [ ... ]
+            }},
+            {{
+            "name": "Advanced",
+            "milestones": [ ... ]
             }}
+        ]
+        }}
 
-            IMPORTANT: Return **only** the JSON object — no explanations, no code blocks, no extra characters or quotes.
-            Return ONLY a valid JSON object, without any line breaks or extra formatting.
+        IMPORTANT: Return **only** the JSON object — no explanations, no code blocks, no extra characters or quotes.
+        Return ONLY a valid JSON object, without any line breaks or extra formatting.
 
 
-            Theme: "{theme}"
-            """
-    
-    url = "https://openrouter.ai/api/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {settings.OPENROUTER_API_KEY}",
-        "Referer": "http://localhost:8000",
-        "X-Title": "Mindfuel Project"
-    }
-    data = {
-        "model": "openrouter/cypher-alpha:free",
-        "messages": [
-            {"role": "user", "content": prompt}
-        ],
-        "max_tokens": 800,
-        "temperature": 0.7
-    }
-    response = requests.post(url, headers=headers, json=data)
-    response.raise_for_status()
-    content = response.json()["choices"][0]["message"]["content"].strip()
-    # Opcional: transformar a resposta em lista de etapas
+        Theme: "{theme}"
+        """
+    system_content = "Você é um designer de trilhas de aprendizado para autodidatas."
+    content = call_ai_api(prompt, system_content=system_content)
     roadmap = json.loads(content)
     return roadmap
