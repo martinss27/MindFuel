@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+User = get_user_model()
 
 # Create your models here.
 
@@ -22,3 +23,10 @@ class Answer(models.Model):
     question = models.ForeignKey(Question,related_name='answers', on_delete=models.CASCADE)
     text = models.TextField()
     is_correct = models.BooleanField(default=False)
+
+class UserQuizResult(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    score = models.FloatField()
+    feedback = models.TextField(blank=True, null=True)
+    completed_at = models.DateTimeField(auto_now_add=True)
