@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'apps.users',
     'apps.learning_paths',
     'apps.recommendations',
+    'apps.progresstracker',
 
 ]
 

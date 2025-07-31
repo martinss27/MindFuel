@@ -6,7 +6,7 @@ User = get_user_model()
 
 class Quiz(models.Model):
     title = models.CharField(max_length=255)
-    milestone = models.ForeignKey('milestone', on_delete=models.CASCADE)
+    milestone = models.CharField(max_length=255)
     created_by_AI = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
