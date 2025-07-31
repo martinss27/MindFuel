@@ -25,19 +25,19 @@ class GenerateQuizView(APIView):
         user = request.user
         milestone_title = request.data.get('milestone_title')
         if not milestone_title:
-            return Response({'error': 'milestone_title é obrigatório.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'milestone_title is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
         previous_results = UserQuizResult.objects.filter(user=user).order_by('-completed_at')[:5]
 
         prompt = build_quiz_prompt(user, milestone_title, previous_results)
 
-        system_content = "Você é um gerador de quizzes para validação de conhecimento."
+        system_content = "you are a quiz generator for knowledge validation."
         ai_content = call_ai_api(prompt, system_content=system_content)
 
         ai_response = json.loads(ai_content)
 
         # save quiz and questions into the db
-        quiz = Quiz.objects.create(title=f"Quiz para {milestone_title}", milestone=milestone_title, created_by_AI=True)
+        quiz = Quiz.objects.create(title=f"quiz for {milestone_title}", milestone=milestone_title, created_by_AI=True)
         for q in ai_response['questions']:
             question = Question.objects.create(quiz=quiz, text=q['text'], question_type=q['type'])
             # save choices and answers
