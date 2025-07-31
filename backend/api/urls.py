@@ -6,4 +6,5 @@ urlpatterns = [
     path('users/', include('apps.users.urls')),
     path('learning-paths/', include('apps.learning_paths.urls')),
     path('recommendations/', include('apps.recommendations.urls')),
+    path('progress/', include('apps.progresstracker.urls'))
 ]
