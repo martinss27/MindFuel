@@ -36,7 +36,6 @@ class GenerateQuizView(APIView):
 
         ai_response = json.loads(ai_content)
 
-        # save quiz and questions into the db
         quiz = Quiz.objects.create(title=f"quiz for {milestone_title}", milestone=milestone_title, created_by_AI=True)
         
         for q in ai_response['questions']:
