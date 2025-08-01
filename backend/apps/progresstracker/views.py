@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 import json
 from django.contrib.auth import get_user_model
-from apps.progresstracker.models import Quiz, Question, UserQuizResult
+from apps.progresstracker.models import Quiz, Question, UserQuizResult, Answer
 from .ai_utils import call_ai_api
 
 User = get_user_model()
@@ -38,8 +38,15 @@ class GenerateQuizView(APIView):
 
         # save quiz and questions into the db
         quiz = Quiz.objects.create(title=f"quiz for {milestone_title}", milestone=milestone_title, created_by_AI=True)
+        
         for q in ai_response['questions']:
             question = Question.objects.create(quiz=quiz, text=q['text'], question_type=q['type'])
-            # save choices and answers
+            if q['type'] == 'multiple_choice' and 'choices' in q:
+                for choice in q['choices']:
+                    is_correct = (choice == q.get('answer'))
+                    Answer.objects.create(question=question, text=choice, is_correct=is_correct)
+            elif q['type'] in ['true_false', 'fill_in_the_blank'] and 'answer' in q:
+                Answer.objects.create(question=question, text=q['answer'], is_correct=True)
+
 
         return Response({'quiz_id': quiz.id}, status=status.HTTP_201_CREATED)
