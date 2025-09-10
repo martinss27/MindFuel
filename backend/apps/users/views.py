@@ -23,23 +23,28 @@ class LoginView(APIView):
             print(serializer.validated_data)
             user = serializer.validated_data['user'] 
             refresh = RefreshToken.for_user(user)
-            response = JsonResponse({
+            access_token = str(refresh.access_token)
+            refresh_token = str(refresh)
+            # Return tokens in response body (helpful for clients like Postman)
+            data = {
                 'user': {
                     'id': user.id,
                     'username': user.username,
                     'email': user.email,
                 }
-            })
+            }
+            response = Response(data)
+            # also set HttpOnly cookies (optional)
             response.set_cookie(
                 key='refresh_token',
-                value=str(refresh),
+                value=refresh_token,
                 httponly=True,
                 secure=False, 
                 samesite='Lax'
             )
             response.set_cookie( 
                 key='access_token',
-                value=str(refresh.access_token),
+                value=access_token,
                 httponly=True,
                 secure=False,
                 samesite='Lax'
